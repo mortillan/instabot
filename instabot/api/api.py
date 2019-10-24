@@ -239,7 +239,7 @@ class API(object):
                     force = True
 
         if not cookie_is_loaded and (not self.is_logged_in or force):
-            self.session = requests.Session()
+            #self.session = requests.Session() #remove to use proxy
             if use_uuid is True:
                 if (self.load_uuid_and_cookie(
                     load_cookie=use_cookie,
