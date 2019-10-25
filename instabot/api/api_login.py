@@ -270,3 +270,25 @@ def save_uuid_and_cookie(self):
     }
     with open(self.cookie_fname, "w") as f:
         json.dump(data, f)
+
+def get_uuid_and_cookies(self):
+    if self.cookie_fname is None:
+        fname = "{}_uuid_and_cookie.json".format(self.username)
+        self.cookie_fname = os.path.join(self.base_path, fname)
+
+    return {
+        "uuids": {
+            "phone_id": self.phone_id,
+            "uuid": self.uuid,
+            "client_session_id": self.client_session_id,
+            "advertising_id": self.advertising_id,
+            "device_id": self.device_id,
+        },
+        "cookie": requests.utils.dict_from_cookiejar(self.session.cookies),
+        "timing_value": {
+            "last_login": self.last_login,
+            "last_experiments": self.last_experiments,
+        },
+        "device_settings": self.device_settings,
+        "user_agent": self.user_agent,
+    }
