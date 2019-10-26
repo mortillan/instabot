@@ -189,7 +189,7 @@ class API(object):
         )
         
     def get_uuid_and_cookie(self):
-        return get_uuid_and_cookie()
+        return get_uuid_and_cookie(self)
 
     def save_uuid_and_cookie(self):
         return save_uuid_and_cookie(self)
