@@ -30,6 +30,7 @@ from .api_login import (
     sync_device_features,
     sync_launcher,
     sync_user_features,
+    get_uuid_and_cookie,
 )
 from .api_photo import configure_photo, download_photo, upload_photo
 from .api_story import configure_story, download_story, upload_story_photo
@@ -186,6 +187,9 @@ class API(object):
         return load_uuid_and_cookie(
             self, load_uuid=load_uuid, load_cookie=load_cookie
         )
+        
+    def get_uuid_and_cookie(self):
+        return get_uuid_and_cookie()
 
     def save_uuid_and_cookie(self):
         return save_uuid_and_cookie(self)

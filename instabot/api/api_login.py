@@ -271,7 +271,7 @@ def save_uuid_and_cookie(self):
     with open(self.cookie_fname, "w") as f:
         json.dump(data, f)
 
-def get_uuid_and_cookies(self):
+def get_uuid_and_cookie(self):
     if self.cookie_fname is None:
         fname = "{}_uuid_and_cookie.json".format(self.username)
         self.cookie_fname = os.path.join(self.base_path, fname)
