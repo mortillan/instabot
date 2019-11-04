@@ -71,29 +71,46 @@ def pre_login_flow(self):
 def login_flow(self, just_logged_in=False, app_refresh_interval=1800):
     self.logger.info("LOGIN FLOW! Just logged-in: {}".format(just_logged_in))
     check_flow = []
+    api_responses = []
     if just_logged_in:
         try:
             # SYNC
             check_flow.append(self.sync_launcher(False))
+            api_responses.append(self.last_response)
             check_flow.append(self.sync_user_features())
+            api_responses.append(self.last_response)
             # Update feed and timeline
             check_flow.append(self.get_timeline_feed())
+            api_responses.append(self.last_response)
             check_flow.append(self.get_reels_tray_feed(reason="cold_start"))
+            api_responses.append(self.last_response)
             check_flow.append(self.get_suggested_searches("users"))
+            api_responses.append(self.last_response)
             # getRecentSearches() ...
             check_flow.append(self.get_suggested_searches("blended"))
+            api_responses.append(self.last_response)
             # DM-Update
             check_flow.append(self.get_ranked_recipients("reshare", True))
+            api_responses.append(self.last_response)
             check_flow.append(self.get_ranked_recipients("save", True))
+            api_responses.append(self.last_response)
             check_flow.append(self.get_inbox_v2())
+            api_responses.append(self.last_response)
             check_flow.append(self.get_presence())
+            api_responses.append(self.last_response)
             check_flow.append(self.get_recent_activity())
+            api_responses.append(self.last_response)
             # Config and other stuffs
             check_flow.append(self.get_loom_fetch_config())
+            api_responses.append(self.last_response)
             check_flow.append(self.get_profile_notice())
+            api_responses.append(self.last_response)
             check_flow.append(self.batch_fetch())
+            api_responses.append(self.last_response)
             # getBlockedMedia() ...
+            # check_flow.append(self.explore(True))
             check_flow.append(self.explore(True))
+            api_responses.append(self.last_response)
             # getQPFetch() ...
             # getFacebookOTA() ...
         except Exception as e:
@@ -110,6 +127,7 @@ def login_flow(self, just_logged_in=False, app_refresh_interval=1800):
                     if pull_to_refresh is True else []
                 )
             )  # Random pull_to_refresh :)
+            api_responses.append(self.last_response)
             check_flow.append(
                 self.get_reels_tray_feed(
                     reason="pull_to_refresh"
@@ -117,6 +135,7 @@ def login_flow(self, just_logged_in=False, app_refresh_interval=1800):
                     else "cold_start"
                 )
             )
+            api_responses.append(self.last_response)
 
             is_session_expired = \
                 (time.time() - self.last_login) > app_refresh_interval
@@ -126,16 +145,25 @@ def login_flow(self, just_logged_in=False, app_refresh_interval=1800):
 
                 # getBootstrapUsers() ...
                 check_flow.append(self.get_ranked_recipients("reshare", True))
+                api_responses.append(self.last_response)
                 check_flow.append(self.get_ranked_recipients("save", True))
+                api_responses.append(self.last_response)
                 check_flow.append(self.get_inbox_v2())
+                api_responses.append(self.last_response)
                 check_flow.append(self.get_presence())
+                api_responses.append(self.last_response)
                 check_flow.append(self.get_recent_activity())
+                api_responses.append(self.last_response)
                 check_flow.append(self.get_profile_notice())
+                api_responses.append(self.last_response)
                 check_flow.append(self.explore(False))
+                api_responses.append(self.last_response)
 
             if (time.time() - self.last_experiments) > 7200:
                 check_flow.append(self.sync_user_features())
+                api_responses.append(self.last_response)
                 check_flow.append(self.sync_device_features())
+                api_responses.append(self.last_response)
         except Exception as e:
             self.logger.error(
                 "Exception raised: {}\n{}".format(e, traceback.format_exc())
@@ -143,7 +171,8 @@ def login_flow(self, just_logged_in=False, app_refresh_interval=1800):
             return False
 
     self.save_uuid_and_cookie()
-    return False if False in check_flow else True
+    # return False if False in check_flow else True
+    return api_responses if False in check_flow else True
 
 
 # ====== DEVICE / CLIENT_ID / PHONE_ID AND OTHER VALUES (uuids) ====== #
