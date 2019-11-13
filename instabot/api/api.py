@@ -207,6 +207,7 @@ class API(object):
         set_device=True,
         generate_all_uuids=True,
         is_threaded=False,
+        logger=None
     ):
         if password is None:
             username, password = get_credentials(username=username)
@@ -234,7 +235,11 @@ class API(object):
                 load_uuid=use_uuid
             ) is True):
                 # Check if the token loaded is valid.
-                if (self.login_flow(False) is True):
+                login_flow_resp = self.login_flow(False)
+                if(isinstance(login_flow_resp, list)):
+                    logger.error("%s" % login_flow_resp)
+                
+                if (login_flow_resp is True):
                     cookie_is_loaded = True
                     self.save_successful_login()
                 else:
@@ -269,7 +274,9 @@ class API(object):
 
             if self.send_request("accounts/login/", data, True):
                 self.save_successful_login()
-                self.login_flow(True)
+                login_flow_resp = self.login_flow(True)
+                if(isinstance(login_flow_resp, list)):
+                    logger.error("%s" % login_flow_resp)
                 return True
 
             elif self.last_json.get(
@@ -281,7 +288,9 @@ class API(object):
                     solved = self.solve_challenge()
                     if solved:
                         self.save_successful_login()
-                        self.login_flow(True)
+                        login_flow_resp = self.login_flow(True)
+                        if(isinstance(login_flow_resp, list)):
+                            logger.error("%s" % login_flow_resp)
                         return True
                     else:
                         self.save_failed_login()
